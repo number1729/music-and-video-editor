@@ -34,12 +34,12 @@ def main(page):
         mp3_files_buttons_view = ft.ListView(expand=1, spacing=10, padding=20)
         mp3_files = get_files_with_extension(directory_path, ".mp3")
         for i in range(len(mp3_files)):
-            mp3_files_buttons_view.controls.append(ft.OutlinedButton(text=os.path.basename(mp3_files[i]), on_click=file_btn_click))
+            mp3_files_buttons_view.controls.append(ft.OutlinedButton(text=mp3_files[i], on_click=file_btn_click))
 
         mp4_files_buttons_view = ft.ListView(expand=1, spacing=10, padding=20)
         mp4_files = get_files_with_extension(directory_path, ".mp4")
         for j in range(len(mp4_files)):
-            mp4_files_buttons_view.controls.append(ft.OutlinedButton(text=os.path.basename(mp4_files[j]), on_click=file_btn_click))
+            mp4_files_buttons_view.controls.append(ft.OutlinedButton(text=mp4_files[j], on_click=file_btn_click))
 
         page.add(ft.Row([mp3_files_buttons_view, mp4_files_buttons_view]))
         
@@ -80,29 +80,28 @@ def main(page):
     
     def directory_button_click(e):
         if not txt_name.value:
-            txt_name.error_text = "Please enter your name"
+            txt_name.error_text = "フォルダ名を入力してください"
             page.update()
         else:
             directory_path = txt_name.value
             # page.clean()
-            page.add(ft.Text(f"your directory, {directory_path}"))
-            page.add(ft.Text("Your files:"))
+            page.add(ft.Text(f"フォルダ, {directory_path}"))
+            page.add(ft.Text("ファイル:"))
             mp3_files_buttons_view = ft.ListView(expand=1, spacing=10, padding=20)
             mp3_files = get_files_with_extension(directory_path, ".mp3")
             for i in range(len(mp3_files)):
-                mp3_files_buttons_view.controls.append(ft.OutlinedButton(text=os.path.basename(mp3_files[i]), on_click=file_btn_click))
+                mp3_files_buttons_view.controls.append(ft.OutlinedButton(text=mp3_files[i], on_click=file_btn_click))
 
             mp4_files_buttons_view = ft.ListView(expand=1, spacing=10, padding=20)
             mp4_files = get_files_with_extension(directory_path, ".mp4")
             for j in range(len(mp4_files)):
-                mp4_files_buttons_view.controls.append(ft.OutlinedButton(text=os.path.basename(mp4_files[j]), on_click=file_btn_click))
+                mp4_files_buttons_view.controls.append(ft.OutlinedButton(text=mp4_files[j], on_click=file_btn_click))
 
             page.add(ft.Row([mp3_files_buttons_view, mp4_files_buttons_view]))
-            # with open(path, "r") as f:
-            #     page.add(ft.Text(f.read()))
 
-    txt_name = ft.TextField(label="Your name")
 
-    page.add(txt_name, ft.ElevatedButton("Say hello!", on_click=directory_button_click))
+    txt_name = ft.TextField(label="フォルダ名を入力してください")
+
+    page.add(txt_name, ft.ElevatedButton("OK", on_click=directory_button_click))
 
 ft.app(target=main)
