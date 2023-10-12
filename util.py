@@ -27,3 +27,10 @@ def create_folder_and_file_on_desktop(folder_name, file_name):
     file_path = os.path.join(new_folder_path, file_name)
 
     return file_path
+
+def get_start_and_end_time(dic,input_word):
+    target_segment_dict = dict()
+    for words_dic in dic["segments"]:
+        if input_word in words_dic["text"]:
+           target_segment_dict.update((words_dic["text"], (words_dic["start"],words_dic["end"])))
+    return target_segment_dict

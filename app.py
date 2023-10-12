@@ -1,11 +1,14 @@
 import flet as ft
 import os 
-from file_util import get_files_with_extension, create_folder_and_file_on_desktop
+from util import get_files_with_extension, create_folder_and_file_on_desktop, get_start_and_end_time
 from pydub import AudioSegment
 from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
+import whisper
 
 def main(page):
+    
     page.title = "Music File Editor"
+    
     def edit(is_mp3,path,start_time,end_time,is_word_edit):
         start_time_value = int(start_time.value)
         end_time_value = int(end_time.value)
@@ -43,10 +46,35 @@ def main(page):
 
         page.add(ft.Row([mp3_files_buttons_view, mp4_files_buttons_view]))
         
+    def do_whisper(e):
+        print(1234)
+        model = whisper.load_model(model_quality_dropdown.value)
+        pb = ft.ProgressBar(width=400, color="amber", bgcolor="#eeeeee")
+        page.add(ft.Text("transcribing..."),pb)
+        result = model.transcribe(path_ft.value)
+        pb.disabled = True
+        page.add(ft.Text("transcribed"))
+        taget_segment_dict = get_start_and_end_time(result,search_word.value)
+        list_view = ft.ListView(expand=1, spacing=10, padding=20)
+        page.add(ft.Text(taget_segment_dict))
+        
+        
+        
+        
 
 
-    def word_edit_mode(is_mp3):
-        page.add(ft.Text("word_edit_mode"))
+    def word_edit_mode(is_mp3,path):
+        path_ft = ft.Text(path)
+        print(1)
+        model_quality_dropdown = ft.Dropdown(label="model quality", options=[ft.dropdown.Option("base"),
+                                                                             ft.dropdown.Option("small"),
+                                                                             ft.dropdown.Option("medium"),
+                                                                             ft.dropdown.Option("large")])
+        print(model_quality_dropdown)
+        search_word = ft.TextField(label="search word")
+        ok_button   = ft.OutlinedButton("ok", on_click= do_whisper)
+        page.add(path_ft,model_quality_dropdown,search_word,ok_button)
+        
 
     
     def time_edit_mode(is_mp3,path):
