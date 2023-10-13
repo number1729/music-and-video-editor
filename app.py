@@ -46,7 +46,7 @@ def main(page):
         mp4_files_buttons_view = ft.ListView(expand=1, spacing=10, padding=20)
         mp4_files = get_files_with_extension(directory_path, ".mp4")
         for j in range(len(mp4_files)):
-            mp4_files_buttons_view.controls.append(ft.OutlinedButton(text=os.path.basename(mp4_files[j]),data=mp3_files[i], on_click=file_btn_click))
+            mp4_files_buttons_view.controls.append(ft.OutlinedButton(text=os.path.basename(mp4_files[j]),data=mp4_files[j], on_click=file_btn_click))
 
         page.add(ft.Row([mp3_files_buttons_view, mp4_files_buttons_view]))
         
@@ -118,7 +118,7 @@ def main(page):
             mp4_files_buttons_view = ft.ListView(expand=1, spacing=10, padding=20)
             mp4_files = get_files_with_extension(directory_path, ".mp4")
             for j in range(len(mp4_files)):
-                mp4_files_buttons_view.controls.append(ft.OutlinedButton(text=os.path.basename(mp4_files[j]),data=mp3_files[i], on_click=file_btn_click))
+                mp4_files_buttons_view.controls.append(ft.OutlinedButton(text=os.path.basename(mp4_files[j]),data=mp4_files[j], on_click=file_btn_click))
 
             page.add(ft.Row([mp3_files_buttons_view, mp4_files_buttons_view]))
 
