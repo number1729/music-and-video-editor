@@ -20,7 +20,7 @@ def main(page):
         print(start_time_value,end_time_value)
         if is_mp3:
             audio = AudioSegment.from_mp3(path)
-            new_audio = audio[start_time_value*1000:end_time_value*1000]
+            new_audio = audio[(start_time_value+1)*1000:(end_time_value+2)*1000]
             path_name = os.path.basename(path)
             file_name = f"{start_time_value}_{end_time_value}_{path_name}" if not is_word_edit else f"{word}_{start_time_value}_{end_time_value}_{path_name}"
             output_path = create_folder_and_file_on_desktop("edited_files", file_name)
@@ -32,7 +32,7 @@ def main(page):
 
             output_path = create_folder_and_file_on_desktop("edited_files", file_name)
             print(path, start_time_value, end_time_value, output_path)
-            ffmpeg_extract_subclip(path, start_time_value, end_time_value, targetname=output_path)
+            ffmpeg_extract_subclip(path, start_time_value+1, end_time_value+2, targetname=output_path)
         page.add(ft.Text("edited"))
         extension = ".mp3" if is_mp3 else ".mp4"
         file_button_list(extension)
