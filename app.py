@@ -34,21 +34,8 @@ def main(page):
             print(path, start_time_value, end_time_value, output_path)
             ffmpeg_extract_subclip(path, start_time_value, end_time_value, targetname=output_path)
         page.add(ft.Text("edited"))
-        directory_path = os.path.dirname(path)
-        page.clean()
-        page.add(ft.Text(f"your directory, {directory_path}"))
-        page.add(ft.Text("Your files:"))
-        mp3_files_buttons_view = ft.ListView(expand=1, spacing=10, padding=20)
-        mp3_files = get_files_with_extension(directory_path, ".mp3")
-        for i in range(len(mp3_files)):
-            mp3_files_buttons_view.controls.append(ft.OutlinedButton(text=os.path.basename(mp3_files[i]),data=mp3_files[i], on_click=file_btn_click))
-
-        mp4_files_buttons_view = ft.ListView(expand=1, spacing=10, padding=20)
-        mp4_files = get_files_with_extension(directory_path, ".mp4")
-        for j in range(len(mp4_files)):
-            mp4_files_buttons_view.controls.append(ft.OutlinedButton(text=os.path.basename(mp4_files[j]),data=mp4_files[j], on_click=file_btn_click))
-
-        page.add(ft.Row([mp3_files_buttons_view, mp4_files_buttons_view]))
+        extension = ".mp3" if is_mp3 else ".mp4"
+        file_button_list(extension)
         
     def edit_from_word(path, word,is_mp3):
         page.clean()
@@ -98,33 +85,33 @@ def main(page):
         page.add(ft.Text(f"your file, {path}"))
         page.add(ft.Row([ft.ElevatedButton("字句で検索・編集",on_click=lambda e:word_edit_mode(is_mp3,path) ),
                          ft.ElevatedButton("時間で検索・編集",on_click=lambda e:time_edit_mode(is_mp3,path))]))
- 
-        
+    
+    def file_button_list(extension):
+            next_extension = ".mp4" if extension == ".mp3" else ".mp3"
+            change_extension_button = ft.ElevatedButton(f"{next_extension}に変更", on_click= lambda e: file_button_list(next_extension))
+            directory_path = txt_name.value
+            page.clean()
+            page.add(ft.Text(f"フォルダ, {directory_path}"))
+            page.add(ft.Text(f"{extension}ファイル:"))
+            files_buttons_view = ft.ListView(expand=1, spacing=10, padding=20, auto_scroll=True)
+            files = get_files_with_extension(directory_path, extension)
+            for i in range(len(files)):
+                files_buttons_view.controls.append(ft.OutlinedButton(text=os.path.basename(files[i]),data=files[i], on_click=file_btn_click))
+            
+            page.add(change_extension_button,files_buttons_view)
+
     
     def directory_button_click(e):
         if not txt_name.value:
             txt_name.error_text = "フォルダ名を入力してください"
             page.update()
         else:
-            directory_path = txt_name.value
-            # page.clean()
-            page.add(ft.Text(f"フォルダ, {directory_path}"))
-            page.add(ft.Text("ファイル:"))
-            mp3_files_buttons_view = ft.ListView(expand=1, spacing=10, padding=20)
-            mp3_files = get_files_with_extension(directory_path, ".mp3")
-            for i in range(len(mp3_files)):
-                mp3_files_buttons_view.controls.append(ft.OutlinedButton(text=os.path.basename(mp3_files[i]),data=mp3_files[i], on_click=file_btn_click))
-
-            mp4_files_buttons_view = ft.ListView(expand=1, spacing=10, padding=20)
-            mp4_files = get_files_with_extension(directory_path, ".mp4")
-            for j in range(len(mp4_files)):
-                mp4_files_buttons_view.controls.append(ft.OutlinedButton(text=os.path.basename(mp4_files[j]),data=mp4_files[j], on_click=file_btn_click))
-
-            page.add(ft.Row([mp3_files_buttons_view, mp4_files_buttons_view]))
-
+            extension = ".mp3" if c1.value else ".mp4"
+            file_button_list(extension)
+            
 
     txt_name = ft.TextField(label="フォルダ名を入力してください")
-
-    page.add(txt_name, ft.ElevatedButton("OK", on_click=directory_button_click))
+    c1 = ft.Switch(label="mp3", value=True)
+    page.add(txt_name,c1,ft.ElevatedButton("OK", on_click=directory_button_click))
 
 ft.app(target=main)
