@@ -93,7 +93,7 @@ def main(page):
             page.clean()
             page.add(ft.Text(f"フォルダ, {directory_path}"))
             page.add(ft.Text(f"{extension}ファイル:"))
-            files_buttons_view = ft.ListView(expand=1, spacing=10, padding=20, auto_scroll=True)
+            files_buttons_view = ft.ListView(expand=1, spacing=10, padding=20)
             files = get_files_with_extension(directory_path, extension)
             for i in range(len(files)):
                 files_buttons_view.controls.append(ft.OutlinedButton(text=os.path.basename(files[i]),data=files[i], on_click=file_btn_click))

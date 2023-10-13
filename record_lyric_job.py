@@ -35,7 +35,6 @@ def get_lyrics_file_path(folder_name, file_name):
 def transcribe(path,model_quality,is_forced=False):
     print_with_color(path,BLUE)
     model = whisper.load_model(model_quality)
-    path = path
     target_file_path = get_lyrics_file_path(
         "edited_files", f"{os.path.basename(path).split('.')[0]}.csv")
     if os.path.exists(target_file_path) & (not is_forced):
@@ -63,6 +62,7 @@ args = args[1:]
 if len(args) == 0:
     print_with_color("no args",RED)
     exit()
+#Downloadした音源のパス
 dir_path = args.pop(0)
 if args:
     model_quality = args.pop(0)
