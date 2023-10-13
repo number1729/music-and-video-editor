@@ -1,24 +1,28 @@
 import flet as ft
 import os 
-from util import get_files_with_extension, create_folder_and_file_on_desktop, get_start_and_end_time
+import pandas as pd
+from util import get_files_with_extension, create_folder_and_file_on_desktop,  get_lyric_data, get_lyrics_file_path
 from pydub import AudioSegment
 from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
-import whisper
 
 def main(page):
     
     page.title = "Music File Editor"
     
-    def edit(is_mp3,path,start_time,end_time,is_word_edit):
-        start_time_value = int(start_time.value)
-        end_time_value = int(end_time.value)
+    def edit(is_mp3,path,start_time,end_time,is_word_edit,word=""):
+        if not is_word_edit:
+            start_time_value = int(start_time.value)
+            end_time_value = int(end_time.value)
+        else:
+            start_time_value = start_time
+            end_time_value = end_time
         page.clean()
         print(start_time_value,end_time_value)
         if is_mp3:
             audio = AudioSegment.from_mp3(path)
             new_audio = audio[start_time_value*1000:end_time_value*1000]
             path_name = os.path.basename(path)
-            file_name = f"{start_time_value}_{end_time_value}_{path_name}"
+            file_name = f"{start_time_value}_{end_time_value}_{path_name}" if not is_word_edit else f"{word}_{start_time_value}_{end_time_value}_{path_name}"
             output_path = create_folder_and_file_on_desktop("edited_files", file_name)
             new_audio.export(output_path, format="mp3")
         else:
@@ -37,43 +41,34 @@ def main(page):
         mp3_files_buttons_view = ft.ListView(expand=1, spacing=10, padding=20)
         mp3_files = get_files_with_extension(directory_path, ".mp3")
         for i in range(len(mp3_files)):
-            mp3_files_buttons_view.controls.append(ft.OutlinedButton(text=mp3_files[i], on_click=file_btn_click))
+            mp3_files_buttons_view.controls.append(ft.OutlinedButton(text=os.path.basename(mp3_files[i]),data=mp3_files[i], on_click=file_btn_click))
 
         mp4_files_buttons_view = ft.ListView(expand=1, spacing=10, padding=20)
         mp4_files = get_files_with_extension(directory_path, ".mp4")
         for j in range(len(mp4_files)):
-            mp4_files_buttons_view.controls.append(ft.OutlinedButton(text=mp4_files[j], on_click=file_btn_click))
+            mp4_files_buttons_view.controls.append(ft.OutlinedButton(text=os.path.basename(mp4_files[j]),data=mp3_files[i], on_click=file_btn_click))
 
         page.add(ft.Row([mp3_files_buttons_view, mp4_files_buttons_view]))
         
-    def do_whisper(e):
-        print(1234)
-        model = whisper.load_model(model_quality_dropdown.value)
-        pb = ft.ProgressBar(width=400, color="amber", bgcolor="#eeeeee")
-        page.add(ft.Text("transcribing..."),pb)
-        result = model.transcribe(path_ft.value)
-        pb.disabled = True
-        page.add(ft.Text("transcribed"))
-        taget_segment_dict = get_start_and_end_time(result,search_word.value)
-        list_view = ft.ListView(expand=1, spacing=10, padding=20)
-        page.add(ft.Text(taget_segment_dict))
-        
-        
-        
+    def edit_from_word(path, word,is_mp3):
+        page.clean()
+        path_csv = get_lyrics_file_path("edited_files", f"{os.path.basename(path).split('.')[0]}.csv")
+        df = pd.read_csv(path_csv)
+        lyric_dict_list = get_lyric_data(df,word)
+        lv = ft.ListView(expand=1, spacing=10, padding=20)
+        for dict_item in lyric_dict_list:
+            dict_item["start"] = int(dict_item["start"])
+            dict_item["end"] = int(dict_item["end"])
+            lv.controls.append(ft.OutlinedButton(text=f"{dict_item['text']}", on_click=lambda e:edit(is_mp3,path,dict_item["start"],dict_item["end"],True,dict_item["text"])))    
+        page.add(lv)
         
 
 
     def word_edit_mode(is_mp3,path):
         path_ft = ft.Text(path)
-        print(1)
-        model_quality_dropdown = ft.Dropdown(label="model quality", options=[ft.dropdown.Option("base"),
-                                                                             ft.dropdown.Option("small"),
-                                                                             ft.dropdown.Option("medium"),
-                                                                             ft.dropdown.Option("large")])
-        print(model_quality_dropdown)
         search_word = ft.TextField(label="search word")
-        ok_button   = ft.OutlinedButton("ok", on_click= do_whisper)
-        page.add(path_ft,model_quality_dropdown,search_word,ok_button)
+        ok_button   = ft.OutlinedButton("ok", on_click= lambda e: edit_from_word(path, search_word.value,is_mp3))
+        page.add(path_ft,search_word,ok_button)
         
 
     
@@ -96,7 +91,7 @@ def main(page):
         
         
     def file_btn_click(e):
-        path = os.path.abspath(e.control.text)
+        path = os.path.abspath(e.control.data)
         page.clean()
         print(path)
         is_mp3 = path.endswith(".mp3")
@@ -118,12 +113,12 @@ def main(page):
             mp3_files_buttons_view = ft.ListView(expand=1, spacing=10, padding=20)
             mp3_files = get_files_with_extension(directory_path, ".mp3")
             for i in range(len(mp3_files)):
-                mp3_files_buttons_view.controls.append(ft.OutlinedButton(text=mp3_files[i], on_click=file_btn_click))
+                mp3_files_buttons_view.controls.append(ft.OutlinedButton(text=os.path.basename(mp3_files[i]),data=mp3_files[i], on_click=file_btn_click))
 
             mp4_files_buttons_view = ft.ListView(expand=1, spacing=10, padding=20)
             mp4_files = get_files_with_extension(directory_path, ".mp4")
             for j in range(len(mp4_files)):
-                mp4_files_buttons_view.controls.append(ft.OutlinedButton(text=mp4_files[j], on_click=file_btn_click))
+                mp4_files_buttons_view.controls.append(ft.OutlinedButton(text=os.path.basename(mp4_files[j]),data=mp3_files[i], on_click=file_btn_click))
 
             page.add(ft.Row([mp3_files_buttons_view, mp4_files_buttons_view]))
 

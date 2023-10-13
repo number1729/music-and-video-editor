@@ -28,9 +28,20 @@ def create_folder_and_file_on_desktop(folder_name, file_name):
 
     return file_path
 
-def get_start_and_end_time(dic,input_word):
-    target_segment_dict = dict()
-    for words_dic in dic["segments"]:
-        if input_word in words_dic["text"]:
-           target_segment_dict.update((words_dic["text"], (words_dic["start"],words_dic["end"])))
-    return target_segment_dict
+"""
+デスクトップにあるフォルダの中にlyricsフォルダを作成し,中にはいるファイルのパスを返す
+"""
+def get_lyrics_file_path(folder_name, file_name):
+         
+    desktop_path = os.path.expanduser("~/Desktop")
+    new_folder_path = os.path.join(desktop_path, folder_name)
+    new_folder_path = os.path.join(new_folder_path, "lyrics")
+    if not os.path.exists(new_folder_path):
+        os.makedirs(new_folder_path)
+    file_path = os.path.join(new_folder_path, file_name)
+    return file_path
+
+
+
+def get_lyric_data(df,word):
+    return df[df["text"].str.contains(word)][["start", "end", "text"]].to_dict(orient="records")
