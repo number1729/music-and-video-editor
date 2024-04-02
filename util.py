@@ -1,4 +1,10 @@
 import os
+from pydub import AudioSegment
+import pathlib
+
+def get_music_len(path :pathlib.Path):
+    audio = AudioSegment.from_file(path)
+    return audio.duration_seconds
 
 def get_files_with_extension(directory, extension):
     # ディレクトリ内のファイルを取得

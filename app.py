@@ -127,4 +127,4 @@ def main(page):
 
     page.add(txt_name, ft.ElevatedButton("OK", on_click=directory_button_click))
 
-ft.app(target=main)
+ft.app(target=main,view=ft.WEB_BROWSER)
