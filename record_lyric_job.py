@@ -58,20 +58,20 @@ def record_job(dir_path,model_quality):
         transcribe(file_path,model_quality)
     print_with_color("record_job done",GREEN_BOLD)
 
-args = sys.argv
-args = args[1:]
-if len(args) == 0:
-    print_with_color("no args",RED)
-    exit()
-dir_path = args.pop(0)
-if args:
-    model_quality = args.pop(0)
-else:
-    model_quality = "base"
+# args = sys.argv
+# args = args[1:]
+# if len(args) == 0:
+#     print_with_color("no args",RED)
+#     exit()
+# dir_path = args.pop(0)
+# if args:
+#     model_quality = args.pop(0)
+# else:
+#     model_quality = "base"
 
-schedule.every().day.at("18:05").do(record_job,dir_path,model_quality)
+# schedule.every().day.at("18:05").do(record_job,dir_path,model_quality)
 
-print_with_color("タスクスケジューラーを起動します",GREEN_BOLD)
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+# print_with_color("タスクスケジューラーを起動します",GREEN_BOLD)
+# while True:
+#     schedule.run_pending()
+#     time.sleep(1)

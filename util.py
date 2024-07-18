@@ -1,10 +1,35 @@
 import os
 from pydub import AudioSegment
 import pathlib
+import whisper
+import pandas as pd
 
 def get_music_len(path :pathlib.Path):
     audio = AudioSegment.from_file(path)
     return audio.duration_seconds
+
+def edit(path :pathlib.Path, start_time, end_time):
+    audio = AudioSegment.from_file(path)
+    audio = audio[start_time*1000:end_time*1000]
+    start_time = round(start_time,1)
+    end_time = round(end_time,1)
+    file_name = f"{start_time}_{end_time}_{path.name}"
+    file_path = path.parent / "music_edit_files" /file_name
+    if not os.path.exists(path.parent / "music_edit_files"):
+        os.makedirs(path.parent / "music_edit_files")
+    audio.export(file_path, format="mp3")
+
+
+def voice_to_text(path :pathlib.Path):
+    model = whisper.load_model("small")
+    result = model.transcribe(str(path), verbose=True, language="ja")
+    print(result)
+    return result
+
+def create_lyric_file(lyric_path :pathlib.Path, result):
+    df = pd.DataFrame(result["segments"])
+    df.to_csv(lyric_path)
+    print(f"lyric file created at {lyric_path}")
 
 def get_files_with_extension(directory, extension):
     # ディレクトリ内のファイルを取得
